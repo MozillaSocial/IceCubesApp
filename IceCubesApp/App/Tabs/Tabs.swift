@@ -71,7 +71,7 @@ enum Tab: Int, Identifiable, Hashable, CaseIterable, Codable {
     case .post:
       VStack { }
     case .discover:
-        DiscoverTab()
+      DiscoverTab()
     case .other:
       EmptyView()
     }

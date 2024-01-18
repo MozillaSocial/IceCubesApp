@@ -13,30 +13,30 @@ import MoSoCore
 
 
 struct TestDiscoverTracker: DiscoverTracker {
-    func trackRecommendationOpen(recommendationID: String) {
-        print("Track: \(recommendationID)")
-    }
+  func trackRecommendationOpen(recommendationID: String) {
+    print("Track: \(recommendationID)")
+  }
 
-    func trackRecommendationShare(recommendationID: String) {
-        print("Track: \(recommendationID)")
-    }
+  func trackRecommendationShare(recommendationID: String) {
+    print("Track: \(recommendationID)")
+  }
 
-    func trackRecommendationBookmark(recommendationID: String) {
-        print("Track: \(recommendationID)")
-    }
+  func trackRecommendationBookmark(recommendationID: String) {
+    print("Track: \(recommendationID)")
+  }
 
-    func trackDiscoverScreenImpression() {
-        print("Track impression")
-    }
+  func trackDiscoverScreenImpression() {
+    print("Track impression")
+  }
 
-    func trackRecommendationImpression(recommendationID: String) {
-        print("Track: \(recommendationID)")
-    }
+  func trackRecommendationImpression(recommendationID: String) {
+    print("Track: \(recommendationID)")
+  }
 }
 
 @MainActor
 struct DiscoverTab: View {
-    var body: some View {
-        DiscoverProvider(session: MoSoSessionManager(user: nil), tracker: TestDiscoverTracker()).makeDiscoverRootView()
-    }
+  var body: some View {
+    DiscoverProvider(session: MoSoSessionManager(user: nil), tracker: TestDiscoverTracker()).makeDiscoverRootView()
+  }
 }
