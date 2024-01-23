@@ -86,14 +86,13 @@ extension StatusEditor {
               .accessibilityHidden(true)
           }
 
-          VStack(alignment: .leading, spacing: 4) {
-            PrivacyMenu(visibility: $viewModel.visibility, tint: isMain ? theme.tintColor : .secondary)
-              .disabled(!isMain)
-
-            Text("@\(account.acct)@\(appAccounts.currentClient.server)")
-              .font(.scaledFootnote)
-              .foregroundStyle(.secondary)
-          }
+          EmojiTextApp(.init(stringValue: account.safeDisplayName),
+                       emojis: account.emojis)
+            .foregroundColor(theme.labelColor)
+            .emojiSize(Font.scaledSubheadlineFont.emojiSize)
+            .emojiBaselineOffset(Font.scaledSubheadlineFont.emojiBaselineOffset)
+            .fontWeight(.semibold)
+            .lineLimit(1)
 
           Spacer()
 

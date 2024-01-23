@@ -100,9 +100,7 @@ extension StatusEditor {
         }
         #endif
         .accessibilitySortPriority(1) // Ensure that all elements inside the `ScrollView` occur earlier than the accessory views
-        .navigationTitle(focusedSEVM.mode.title)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar { ToolbarItems(mainSEVM: mainSEVM,
+        .toolbar { ToolbarItems(mainSEVM: $mainSEVM,
                                 focusedSEVM: focusedSEVM,
                                 followUpSEVMs: followUpSEVMs) }
         .toolbarBackground(.visible, for: .navigationBar)

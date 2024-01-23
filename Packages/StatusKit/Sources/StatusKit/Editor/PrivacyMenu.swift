@@ -22,11 +22,6 @@ extension StatusEditor {
           Image(systemName: "chevron.down")
         }
         .font(.scaledFootnote)
-        .padding(4)
-        .overlay(
-          RoundedRectangle(cornerRadius: 8)
-            .stroke(tint, lineWidth: 1)
-        )
       }
     }
   }

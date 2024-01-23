@@ -11,7 +11,7 @@ extension StatusEditor {
     @State private var isDismissAlertPresented: Bool = false
     @State private var isDraftsSheetDisplayed: Bool = false
     
-    let mainSEVM: ViewModel
+    @Binding var mainSEVM: ViewModel
     let focusedSEVM: ViewModel
     let followUpSEVMs: [ViewModel]
 
@@ -25,13 +25,18 @@ extension StatusEditor {
       @Environment(\.dismiss) private var dismiss
     #endif
 
-    var body: some ToolbarContent {
+    var body: some ToolbarContent { //Add items to the right of the create post title
       if !mainSEVM.mode.isInShareExtension {
         ToolbarItem(placement: .navigationBarTrailing) {
           Button {
             isDraftsSheetDisplayed = true
           } label: {
-            Image(systemName: "pencil.and.list.clipboard")
+            HStack {
+              Text("Drafts")
+              Image(systemName: "chevron.down")
+            }
+            .font(.subheadline)
+            .foregroundStyle(theme.labelColor)
           }
           .accessibilityLabel("accessibility.editor.button.drafts")
           .popover(isPresented: $isDraftsSheetDisplayed) {
@@ -45,7 +50,11 @@ extension StatusEditor {
           }
         }
       }
-        
+
+      ToolbarItem(placement: .navigationBarTrailing) {
+        PrivacyMenu(visibility: $mainSEVM.visibility, tint: theme.tintColor)
+      }
+
       ToolbarItem(placement: .navigationBarTrailing) {
         Button {
           Task {
