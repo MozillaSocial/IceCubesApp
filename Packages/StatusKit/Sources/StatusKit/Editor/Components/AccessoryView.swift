@@ -22,10 +22,6 @@ extension StatusEditor {
 
     @State private var isCustomEmojisSheetDisplay: Bool = false
     @State private var isLoadingAIRequest: Bool = false
-    @State private var isPhotosPickerPresented: Bool = false
-    @State private var isFileImporterPresented: Bool = false
-    @State private var isCameraPickerPresented: Bool = false
-    @State private var isGIFPickerPresented: Bool = false
 
     var body: some View {
       @Bindable var viewModel = focusedSEVM
@@ -77,90 +73,6 @@ extension StatusEditor {
     @ViewBuilder
     private var actionsView: some View {
       @Bindable var viewModel = focusedSEVM
-      Menu {
-        Button {
-          isPhotosPickerPresented = true
-        } label: {
-          Label("status.editor.photo-library", systemImage: "photo")
-        }
-        #if !targetEnvironment(macCatalyst)
-          Button {
-            isCameraPickerPresented = true
-          } label: {
-            Label("status.editor.camera-picker", systemImage: "camera")
-          }
-        #endif
-        Button {
-          isFileImporterPresented = true
-        } label: {
-          Label("status.editor.browse-file", systemImage: "folder")
-        }
-
-        #if !os(visionOS)
-        Button {
-          isGIFPickerPresented = true
-        } label: {
-          Label("GIPHY", systemImage: "party.popper")
-        }
-        #endif
-      } label: {
-        if viewModel.isMediasLoading {
-          ProgressView()
-        } else {
-          Image(systemName: "photo.on.rectangle.angled")
-        }
-      }
-      .photosPicker(isPresented: $isPhotosPickerPresented,
-                    selection: $viewModel.mediaPickers,
-                    maxSelectionCount: 4,
-                    matching: .any(of: [.images, .videos]),
-                    photoLibrary: .shared())
-      .fileImporter(isPresented: $isFileImporterPresented,
-                    allowedContentTypes: [.image, .video],
-                    allowsMultipleSelection: true)
-      { result in
-        if let urls = try? result.get() {
-          viewModel.processURLs(urls: urls)
-        }
-      }
-      .fullScreenCover(isPresented: $isCameraPickerPresented, content: {
-        CameraPickerView(selectedImage: .init(get: {
-          nil
-        }, set: { image in
-          if let image {
-            viewModel.processCameraPhoto(image: image)
-          }
-        }))
-        .background(.black)
-      })
-      .sheet(isPresented: $isGIFPickerPresented, content: {
-        #if !os(visionOS) && !DEBUG
-          #if targetEnvironment(macCatalyst)
-          NavigationStack {
-            giphyView
-            .toolbar {
-              ToolbarItem(placement: .topBarLeading) {
-                Button {
-                  isGIFPickerPresented = false
-                } label: {
-                  Image(systemName: "xmark.circle")
-                }
-              }
-            }
-          }
-          .presentationDetents([.medium, .large])
-          #else
-          giphyView
-            .presentationDetents([.medium, .large])
-          #endif
-        #else
-        EmptyView()
-        #endif
-      })
-      .accessibilityLabel("accessibility.editor.button.attach-photo")
-      .disabled(viewModel.showPoll)
-
-      
       Button {
         // all SEVM have the same visibility value
         followUpSEVMs.append(ViewModel(mode: .new(visibility: focusedSEVM.visibility)))
