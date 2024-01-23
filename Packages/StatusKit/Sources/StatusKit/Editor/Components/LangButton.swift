@@ -21,16 +21,16 @@ extension StatusEditor {
         isLanguageSheetDisplayed.toggle()
       } label: {
         HStack(alignment: .center) {
-          Image(systemName: "text.bubble")
           if let language = viewModel.selectedLanguage {
             Text(language.uppercased())
           } else {
             Image(systemName: "globe")
           }
+          Image(systemName: "chevron.down")
         }
         .font(.footnote)
       }
-      .buttonStyle(.bordered)
+      .buttonStyle(.plain)
       .onAppear {
         viewModel.setInitialLanguageSelection(preference: preferences.recentlyUsedLanguages.first ?? preferences.serverPreferences?.postLanguage)
       }

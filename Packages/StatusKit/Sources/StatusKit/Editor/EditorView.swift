@@ -156,10 +156,7 @@ extension StatusEditor {
     @ViewBuilder
     private var characterCountAndLangView: some View {
       let value = (currentInstance.instance?.configuration?.statuses.maxCharacters ?? 500) + viewModel.statusTextCharacterLength
-      HStack(alignment: .center) {
-        LangButton(viewModel: viewModel)
-          .padding(.leading, .layoutPadding)
-        
+      HStack(alignment: .center, spacing: 20) {
         Button {
           withAnimation {
             viewModel.showPoll.toggle()
@@ -168,9 +165,10 @@ extension StatusEditor {
         } label: {
           Image(systemName: viewModel.showPoll ? "chart.bar.fill" : "chart.bar")
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.plain)
         .accessibilityLabel("accessibility.editor.button.poll")
         .disabled(viewModel.shouldDisablePollButton)
+        .padding(.leading, .layoutPadding)
 
         Button {
           withAnimation {
@@ -180,14 +178,16 @@ extension StatusEditor {
         } label: {
           Image(systemName: viewModel.spoilerOn ? "exclamationmark.triangle.fill" : "exclamationmark.triangle")
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.plain)
         .accessibilityLabel("accessibility.editor.button.spoiler")
         
         Spacer()
-        
+
+        LangButton(viewModel: viewModel)
+
         Text("\(value)")
-          .foregroundColor(value < 0 ? .red : .secondary)
-          .font(.callout.monospacedDigit())
+          .foregroundColor(value < 0 ? .red : .primary)
+          .font(.footnote.monospacedDigit())
           .accessibilityLabel("accessibility.editor.button.characters-remaining")
           .accessibilityValue("\(value)")
           .accessibilityRemoveTraits(.isStaticText)
