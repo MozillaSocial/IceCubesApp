@@ -4,7 +4,7 @@ import SwiftUI
 extension StatusEditor {
   struct PrivacyMenu: View {
     @Binding var visibility: Models.Visibility
-    let tint: Color
+    let foregroundColor: Color
 
     var body: some View {
       Menu {
@@ -14,14 +14,16 @@ extension StatusEditor {
           }
         }
       } label: {
-        HStack {
-          Label(visibility.title, systemImage: visibility.iconName)
-            .accessibilityLabel("accessibility.editor.privacy.label")
-            .accessibilityValue(visibility.title)
-            .accessibilityHint("accessibility.editor.privacy.hint")
+        HStack(spacing: 7) {
+          Image(systemName: visibility.iconName)
+          Text(visibility.title)
           Image(systemName: "chevron.down")
         }
-        .font(.scaledFootnote)
+        .foregroundStyle(foregroundColor)
+        .font(.footnote)
+        .accessibilityLabel("accessibility.editor.privacy.label")
+        .accessibilityValue(visibility.title)
+        .accessibilityHint("accessibility.editor.privacy.hint")
       }
     }
   }

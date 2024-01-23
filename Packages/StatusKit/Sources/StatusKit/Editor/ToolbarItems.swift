@@ -31,11 +31,11 @@ extension StatusEditor {
           Button {
             isDraftsSheetDisplayed = true
           } label: {
-            HStack {
+            HStack(spacing: 7) {
               Text("Drafts")
               Image(systemName: "chevron.down")
             }
-            .font(.subheadline)
+            .font(.footnote)
             .foregroundStyle(theme.labelColor)
           }
           .accessibilityLabel("accessibility.editor.button.drafts")
@@ -52,7 +52,7 @@ extension StatusEditor {
       }
 
       ToolbarItem(placement: .navigationBarTrailing) {
-        PrivacyMenu(visibility: $mainSEVM.visibility, tint: theme.tintColor)
+        PrivacyMenu(visibility: $mainSEVM.visibility, foregroundColor: theme.labelColor)
       }
 
       ToolbarItem(placement: .navigationBarTrailing) {
@@ -66,10 +66,18 @@ extension StatusEditor {
             }
           }
         } label: {
-          Image(systemName: "paperplane.fill")
-            .bold()
+          Text("Post")
+            .alignmentGuide(HorizontalAlignment.center, computeValue: { d in
+                                d[HorizontalAlignment.center]
+                              })
+            .foregroundStyle(.white)
+            .padding(.horizontal)
+            .padding(.vertical, 2)
         }
-        .buttonStyle(.borderedProminent)
+        .background {
+          postButtonColor
+        }
+        .clipShape(Capsule())
         .disabled(!mainSEVM.canPost || mainSEVM.isPosting)
         .keyboardShortcut(.return, modifiers: .command)
         .confirmationDialog("", isPresented: $isLanguageConfirmPresented, actions: {
@@ -109,6 +117,10 @@ extension StatusEditor {
           }
         )
       }
+    }
+
+    var postButtonColor: Color {
+      !mainSEVM.canPost || mainSEVM.isPosting ? theme.tintColor : theme.secondaryBackgroundColor
     }
 
     @discardableResult
