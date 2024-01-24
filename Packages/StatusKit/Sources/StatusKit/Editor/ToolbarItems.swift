@@ -120,7 +120,7 @@ extension StatusEditor {
     }
 
     var postButtonColor: Color {
-      !mainSEVM.canPost || mainSEVM.isPosting ? theme.tintColor : theme.secondaryBackgroundColor
+      !mainSEVM.canPost || mainSEVM.isPosting ? Color.gray : theme.tintColor
     }
 
     @discardableResult
