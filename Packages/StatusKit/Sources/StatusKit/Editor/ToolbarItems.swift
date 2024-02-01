@@ -11,7 +11,7 @@ extension StatusEditor {
     @State private var isDismissAlertPresented: Bool = false
     @State private var isDraftsSheetDisplayed: Bool = false
     
-    let mainSEVM: ViewModel
+    @Binding var mainSEVM: ViewModel
     let focusedSEVM: ViewModel
     let followUpSEVMs: [ViewModel]
 
@@ -25,13 +25,18 @@ extension StatusEditor {
       @Environment(\.dismiss) private var dismiss
     #endif
 
-    var body: some ToolbarContent {
+    var body: some ToolbarContent { //Add items to the right of the create post title
       if !mainSEVM.mode.isInShareExtension {
         ToolbarItem(placement: .navigationBarTrailing) {
           Button {
             isDraftsSheetDisplayed = true
           } label: {
-            Image(systemName: "pencil.and.list.clipboard")
+            HStack(spacing: 7) {
+              Text("Drafts")
+              Image(systemName: "chevron.down")
+            }
+            .font(.footnote)
+            .foregroundStyle(theme.labelColor)
           }
           .accessibilityLabel("accessibility.editor.button.drafts")
           .popover(isPresented: $isDraftsSheetDisplayed) {
@@ -45,7 +50,11 @@ extension StatusEditor {
           }
         }
       }
-        
+
+      ToolbarItem(placement: .navigationBarTrailing) {
+        PrivacyMenu(visibility: $mainSEVM.visibility, foregroundColor: theme.labelColor)
+      }
+
       ToolbarItem(placement: .navigationBarTrailing) {
         Button {
           Task {
@@ -57,10 +66,18 @@ extension StatusEditor {
             }
           }
         } label: {
-          Image(systemName: "paperplane.fill")
-            .bold()
+          Text("Post")
+            .alignmentGuide(HorizontalAlignment.center, computeValue: { d in
+                                d[HorizontalAlignment.center]
+                              })
+            .foregroundStyle(.white)
+            .padding(.horizontal)
+            .padding(.vertical, 2)
         }
-        .buttonStyle(.borderedProminent)
+        .background {
+          postButtonColor
+        }
+        .clipShape(Capsule())
         .disabled(!mainSEVM.canPost || mainSEVM.isPosting)
         .keyboardShortcut(.return, modifiers: .command)
         .confirmationDialog("", isPresented: $isLanguageConfirmPresented, actions: {
@@ -100,6 +117,10 @@ extension StatusEditor {
           }
         )
       }
+    }
+
+    var postButtonColor: Color {
+      !mainSEVM.canPost || mainSEVM.isPosting ? Color.gray : theme.tintColor
     }
 
     @discardableResult
