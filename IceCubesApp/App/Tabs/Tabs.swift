@@ -71,9 +71,7 @@ enum Tab: Int, Identifiable, Hashable, CaseIterable, Codable {
     case .post:
       VStack { }
     case .discover:
-        NavigationTab {
-            Text("Todays Top Picks, Coming Soon!")
-        }
+      DiscoverTab()
     case .other:
       EmptyView()
     }
