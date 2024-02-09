@@ -18,15 +18,8 @@ struct NotificationRowView: View {
 
   var body: some View {
     HStack(alignment: .top, spacing: 8) {
-      if notification.accounts.count == 1 {
-        makeAvatarView(type: notification.type)
-          .accessibilityHidden(true)
-      } else {
-        makeNotificationIconView(type: notification.type)
-          .frame(width: AvatarView.FrameConfig.status.width,
-                 height: AvatarView.FrameConfig.status.height)
-          .accessibilityHidden(true)
-      }
+      makeAvatarView(type: notification.type)
+        .accessibilityHidden(true)
       VStack(alignment: .leading, spacing: 2) {
         makeMainLabel(type: notification.type)
           // The main label is redundant for mentions
@@ -52,7 +45,15 @@ struct NotificationRowView: View {
 
   private func makeAvatarView(type: Models.Notification.NotificationType) -> some View {
     ZStack(alignment: .topLeading) {
-      AvatarView(notification.accounts[0].avatar)
+      if notification.accounts.count > 1 {
+        AvatarView(notification.accounts[1].avatar)
+          .scaleEffect(0.75, anchor: .topLeading)
+          .offset(x: 10, y: 8)
+        AvatarView(notification.accounts[0].avatar)
+          .scaleEffect(0.75, anchor: .topLeading)
+      } else {
+        AvatarView(notification.accounts[0].avatar)
+      }
       makeNotificationIconView(type: type)
         .offset(x: -8, y: -8)
     }
@@ -79,23 +80,8 @@ struct NotificationRowView: View {
 
   private func makeMainLabel(type: Models.Notification.NotificationType) -> some View {
     VStack(alignment: .leading, spacing: 4) {
-      if notification.accounts.count > 1 {
-        ScrollView(.horizontal, showsIndicators: false) {
-          LazyHStack(spacing: 8) {
-            ForEach(notification.accounts) { account in
-              AvatarView(account.avatar)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                  routerPath.navigate(to: .accountDetailWithAccount(account: account))
-                }
-            }
-          }
-          .padding(.leading, 1)
-          .frame(height: AvatarView.FrameConfig.status.size.height + 2)
-        }.offset(y: -1)
-      }
       if !reasons.contains(.placeholder) {
-        HStack(spacing: 0) {
+        HStack(alignment: .top) {
           EmojiTextApp(.init(stringValue: notification.accounts[0].safeDisplayName),
                        emojis: notification.accounts[0].emojis,
                        append: {
@@ -106,15 +92,7 @@ struct NotificationRowView: View {
                            : Text(" ")) +
                            Text(type.label(count: notification.accounts.count))
                            .font(.scaledSubheadline)
-                           .fontWeight(.regular) +
-                           Text(" ⸱ ")
-                           .font(.scaledFootnote)
                            .fontWeight(.regular)
-                           .foregroundStyle(.secondary) +
-                           Text(notification.createdAt.relativeFormatted)
-                           .font(.scaledFootnote)
-                           .fontWeight(.regular)
-                           .foregroundStyle(.secondary)
                        })
                        .font(.scaledSubheadline)
                        .emojiSize(Font.scaledSubheadlineFont.emojiSize)
@@ -122,6 +100,10 @@ struct NotificationRowView: View {
                        .fontWeight(.semibold)
                        .lineLimit(3)
                        .fixedSize(horizontal: false, vertical: true)
+          Spacer()
+          Text(notification.createdAt.shortRelativeFormatted)
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
           if let status = notification.status, notification.type == .mention {
             Group {
               Text(" ⸱ ")
@@ -132,7 +114,6 @@ struct NotificationRowView: View {
             .fontWeight(.regular)
             .foregroundStyle(.secondary)
           }
-          Spacer()
         }
       } else {
         Text("          ")

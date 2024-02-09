@@ -1,4 +1,5 @@
 import DesignSystem
+import DesignKit
 import Env
 import Models
 import Network
@@ -14,16 +15,38 @@ public struct NotificationsListView: View {
   @Environment(RouterPath.self) private var routerPath
   @Environment(CurrentAccount.self) private var account
   @State private var viewModel = NotificationsViewModel()
+  @State private var selectedFilter: LocalizedStringKey
   @Binding var scrollToTopSignal: Int
 
   let lockedType: Models.Notification.NotificationType?
 
+  private let segments: [Models.Notification.NotificationType?] = [nil, Models.Notification.NotificationType.mention, Models.Notification.NotificationType.follow_request]
+  private let segmentTitles: [LocalizedStringKey]
+
   public init(lockedType: Models.Notification.NotificationType?, scrollToTopSignal: Binding<Int>) {
     self.lockedType = lockedType
     _scrollToTopSignal = scrollToTopSignal
+    segmentTitles = segments.map {
+      guard let segment = $0 else {
+        return "notifications.tab.all"
+      }
+
+      return segment.menuTitle()
+    }
+
+    _selectedFilter = State(initialValue: segmentTitles[0])
   }
 
   public var body: some View {
+    SegmentedControl(sources: segmentTitles, selected: $selectedFilter)
+        .onChange(of: selectedFilter) {
+          let selectedNotificationFilter = segments.first(where: { $0?.menuTitle() == selectedFilter }) ?? nil
+          viewModel.selectedType = selectedNotificationFilter
+          Task {
+            await viewModel.fetchNotifications()
+          }
+        }
+    Divider()
     ScrollViewReader { proxy in
       List {
         scrollToTopView
@@ -39,54 +62,7 @@ public struct NotificationsListView: View {
         }
       }
     }
-    .toolbar {
-      ToolbarItem(placement: .principal) {
-        let title = lockedType?.menuTitle() ?? viewModel.selectedType?.menuTitle() ?? "notifications.navigation-title"
-        if lockedType == nil {
-          Text(title)
-            .font(.headline)
-            .accessibilityRepresentation {
-              Menu(title) {}
-            }
-            .accessibilityAddTraits(.isHeader)
-            .accessibilityRemoveTraits(.isButton)
-            .accessibilityRespondsToUserInteraction(true)
-        } else {
-          Text(title)
-            .font(.headline)
-            .accessibilityAddTraits(.isHeader)
-        }
-      }
-    }
-    .toolbar {
-      if lockedType == nil {
-        ToolbarTitleMenu {
-          Button {
-            viewModel.selectedType = nil
-            Task {
-              await viewModel.fetchNotifications()
-            }
-          } label: {
-            Label("notifications.navigation-title", systemImage: "bell.fill")
-          }
-          Divider()
-          ForEach(Notification.NotificationType.allCases, id: \.self) { type in
-            Button {
-              viewModel.selectedType = type
-              Task {
-                await viewModel.fetchNotifications()
-              }
-            } label: {
-              Label {
-                Text(type.menuTitle())
-              } icon: {
-                type.icon(isPrivate: false)
-              }
-            }
-          }
-        }
-      }
-    }
+    .navigationTitle("Notifications")
     .navigationBarTitleDisplayMode(.inline)
     #if !os(visionOS)
     .scrollContentBackground(.hidden)
