@@ -20,9 +20,6 @@ public struct AvatarView: View {
         }
     } else {
       AvatarPlaceHolder(config: adaptiveConfig)
-//        .overlay {
-//          Circle().stroke(theme.avatarBorderColor, lineWidth: 2)
-//        }
     }
   }
 
